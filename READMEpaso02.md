@@ -14,7 +14,7 @@ ubuntu@lubuntu:~/cpumem$ tree
 
 El archivo [plugin.yaml](cpumem/plugin.yaml) es obligatorio. Notar que este archivo llama a ejecutar el archivo "script.sh".  También es importante resaltar que hay un "hook" que otorga permisos de ejecución al archivo "script.sh" debido a que es algo muy común el problema de no poder ejecutar un script debido a falta de permisos.
 ```
-ubuntu@lubuntu:~/.local/share/helm/plugins/cpumem$ more plugin.yaml 
+ubuntu@lubuntu:~/cpumem$ more plugin.yaml 
 name: "cpumem"
 version: "0.1.0"
 usage: "helm cpumem -d <chart dir>"
@@ -74,6 +74,20 @@ ubuntu@lubuntu:~/cpumem$ helm plugin list
 NAME  	VERSION	DESCRIPTION                                     
 cpumem	0.1.0  	Calculate cpu and mem used by pods in deployment
 ubuntu@lubuntu:~/cpumem$ 
+```
+También podemos verificar que los archivos plugin fueron copiados al directorio $HELM_PLUGIN
+
+```
+ubuntu@lubuntu:~/cpumem$ helm env | grep HELM_PLUGIN
+HELM_PLUGINS="/home/ubuntu/.local/share/helm/plugins"
+
+ubuntu@lubuntu:~/cpumem$ cd /home/ubuntu/.local/share/helm/plugins/cpumem
+ubuntu@lubuntu:~/.local/share/helm/plugins/cpumem$ ls -hal
+total 16K
+drwxrwxr-x 2 ubuntu ubuntu 4.0K Sep  7 02:07 .
+drwxr-xr-x 9 ubuntu ubuntu 4.0K Sep  7 02:10 ..
+-rw-rw-r-- 1 ubuntu ubuntu  245 Sep  6 02:01 plugin.yaml
+-rwxrwxr-x 1 ubuntu ubuntu 2.0K Sep  7 00:17 script.sh
 ```
 
 ## EJECUCIÓN
