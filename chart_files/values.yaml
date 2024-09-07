@@ -10,7 +10,7 @@ deploy:
         containerPortName: grafana
         containerPort: 3000
         env:
-          env_adminpass: GF_SECURITY_ADMIN_PASSWORD
+          adminpass_env: GF_SECURITY_ADMIN_PASSWORD
           adminpass: whitestack
         resources:
            memorylimit: "1Gi"
