@@ -1,6 +1,6 @@
 # CHALLENGE 05  PASO 2: Crear un Helm Plugin para listar resources requests de CPU y Memoria
 
-## CONFIGURACIÓN
+## ESTRUCTURA DEL PLUGIN
 
 Los archivos de este plugin se encuentran disponibles en este git y en este directorio [cpumem](cpumem). El plugin está compuesto de 2 archivos como se muestra:
 ```
