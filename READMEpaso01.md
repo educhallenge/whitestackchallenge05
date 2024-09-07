@@ -42,12 +42,10 @@ spec:
 ## EJECUCIÓN
 
 Se configura la variable de entorno para seleccionar cuál es el worker en que se prefiere desplegar los pods. Luego ejecutamos la opción post-renderer de helm. Esta opción llama al script [kustomize.sh](chart_files/kustomize.sh)
-
-Podemos primero usar "helm template" para verificar que el archivo YAML resultante del script esté correcto. Luego podemos usar "helm install" para instalar el chart.
-
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ export workerhostname=whitestackchallenge-worker-f97ebc81-kfbgg
 ```
+Podemos primero usar "helm template" para verificar que el archivo YAML resultante del script esté correcto. Luego podemos usar "helm install" para instalar el chart.
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ helm template mygrafana . --post-renderer ./kustomize.sh 
 apiVersion: v1
