@@ -24,3 +24,6 @@ command: "$HELM_PLUGIN_DIR/script.sh"
 hooks:
   install: "chmod +x $HELM_PLUGIN_DIR/script.sh"
 ```
+
+El archivo [script.sh](cpumem/script.sh)  es un bash script que ejecuta el comando "helm template dummytest $chart_dir". Esto es debido al requerimiento de que el plugin no debe instalar la aplicación.
+
