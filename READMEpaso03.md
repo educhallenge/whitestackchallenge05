@@ -1,6 +1,6 @@
 # CHALLENGE 05  PASO 3: Crear Helm Plugin para validación y configuración de información sensible
 
-## CONFIGURACIÓN
+## ESTRUCTURA DEL PLUGIN
 
 Los archivos de este plugin se encuentran disponibles en este git y en este directorio [sensitivedata](sensitivedata). El plugin está compuesto de 2 archivos como se muestra:
 ```
@@ -23,4 +23,14 @@ command: "$HELM_PLUGIN_DIR/script.sh"
 hooks:
   install: "chmod +x $HELM_PLUGIN_DIR/script.sh"
 
+```
+
+## REQUISITO DE PASSWORD COMPLEXITY
+
+El archivo [script.sh](cpumem/script.sh)  es un bash script que ejecuta el comando "helm template dummytest $chart_dir". Esto es debido al requerimiento de que el plugin no debe instalar la aplicación.
+
+El resultado de dicho comando es parseado por la herramienta yq.  A continuación mostramos el extracto del script que muestra el parseo
+
+```
+    my_array=( $( helm template dummytest $chart_dir | yq e 'select(.kind == "Deployment").spec.replicas,select(.kind == "Deployment").spec.template.spec.containers[0].resources.requests.memory,select(.kind == "Deployment").spec.template.spec.containers[0].resources.requests.cpu,select(.kind == "Deployment").metadata.name' ))
 ```
