@@ -85,8 +85,32 @@ enforce_passcomplexity() {
 
 ## VERIFICACÓN DE PASSWORD COMPLEXITY
 
-Usamos un key "adminpass" en el archivo values.yaml cuyo valor es whitestack y verificamos que todas las políticas de password complexity se cumplen
+Usamos el key "adminpass" en el archivo values.yaml cuyo valor es whitestack y verificamos que no se cumple la política de tener al menos una mayúscula.
 
+```
+ubuntu@lubuntu:~$ more challenge05/grafanachart/values.yaml | grep adminpass:
+          adminpass: whitestack
+
+ubuntu@lubuntu:~$ helm sensitivedata -d ./challenge05/grafanachart
+
+Policy enforced. Password has 8 or more characters
+Password does not contain an uppercase letter. Aborting chart installation
+Error: plugin "sensitivedata" exited with error
+```
+
+Ahora probamos cuando el key "adminpass" tiene el valor Whitestack1 y verificamos que no se cumple la política de caracteres especiales
+```
+ubuntu@lubuntu:~$ helm sensitivedata -d ./challenge05/grafanachart
+
+Policy enforced. Password has 8 or more characters
+Policy enforced. Password contains at least one uppercase letter.
+Policy enforced. Password contains at least one lowercase letter.
+Policy enforced. Password contains at least one digit.
+Password does not contain one of the following  !@#$%^&*()_+ special characters. Aborting chart installation
+Error: plugin "sensitivedata" exited with error
+```
+
+Ahora probamos cuando el key "adminpass" tiene el valor Whitestack1! y verificamos que todas las políticas de password complexity se cumplen
 ```
 ubuntu@lubuntu:~$ more challenge05/grafanachart/values.yaml | grep adminpass:
           adminpass: Whitestack1!
