@@ -17,7 +17,7 @@ spec:
       - name: {{ .Values.deploy.containers.name}}
         image: {{ .Values.deploy.containers.image.tag}}
         env:
-        - name: {{ .Values.deploy.containers.env.env_adminpass}}
+        - name: {{ .Values.deploy.containers.env.adminpass_env}}
           value: {{ .Values.deploy.containers.env.adminpass}}
         ports:
         - name: {{ .Values.deploy.containers.containerPortName}}
