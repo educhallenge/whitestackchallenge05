@@ -1,0 +1,26 @@
+deploy:
+    name: grafana
+    label: grafana
+    replicaCount: 3
+    hostname: whitestackchallenge-worker-f97ebc81-kfbgg
+    containers:
+        name: grafana
+        image:
+          tag: "grafana/grafana:11.2.0"
+        containerPortName: grafana
+        containerPort: 3000
+        env:
+          env_adminpass: GF_SECURITY_ADMIN_PASSWORD
+          adminpass: whitestack
+        resources:
+           memorylimit: "1Gi"
+           cpulimit:  "1000m"
+           memoryrequests: 400M
+           cpurequests: "500m"
+
+svc:
+    name: grafana
+    label: grafana
+    ports:
+        port: 3000
+        targetPort: 3000
