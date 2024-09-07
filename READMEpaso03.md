@@ -32,9 +32,9 @@ ubuntu@lubuntu:~$ helm sensitivedata -d ./challenge05/grafanachart
 
 ## REQUISITO DE PASSWORD COMPLEXITY
 
-Cumplimos este requisito con la función enforce_passcomplexity del archivo [script.sh](sensitivedata/script.sh)  Dicha función parsea el archivo "values.yaml" del chart y extrae los keys cuyo nombre termine en "pass" o en "credentials" o en "passwords" o en "pwd".
+Cumplimos este requisito con la función enforce_passcomplexity del archivo [script.sh](sensitivedata/script.sh)  Dicha función usa el comando "yq" para parsear el archivo "values.yaml" del chart y extraer los keys cuyo nombre termine en "pass" o en "credentials" o en "passwords" o en "pwd".
 
-Los values de dichas keys se almacenan en el array llamado my_array. En caso alguno de los keys no exista enntonces el value será "null".  El script ignora los values "null". El resto de values los analiza para ver si cumplen las políticas  de tener por lo menos 8 caracteres, por lo menos 1 mayúscula, por lo menos 1 minúscula, por lo menos 1 dígito, por lo menos algunos caracteres especiales.  En caso no cumple con alguna de esas políticas el script da un mensaje de error y termina el script con el comando "exit 1".
+Los values de dichas keys se almacenan en el array llamado my_array. En caso alguno de los keys no exista enntonces el value será "null".  El script ignora los values "null". El resto de values se analizan para ver si cumplen las políticas  de tener por lo menos 8 caracteres, por lo menos 1 mayúscula, por lo menos 1 minúscula, por lo menos 1 dígito, por lo menos algunos caracteres especiales. Para verificar cada política usa un "if" y se compara el value con un regex. En caso no cumple con alguna de esas políticas el script da un mensaje de error y termina el script con el comando "exit 1".
 
 A continuación mostramos el extracto del script con dicha función. 
 
@@ -83,7 +83,6 @@ enforce_passcomplexity() {
     done
 
 ```
-
 
 ## REQUISITO DE CREAR SECRET
 
