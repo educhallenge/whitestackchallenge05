@@ -32,12 +32,56 @@ ubuntu@lubuntu:~$ helm sensitivedata -d ./challenge05/grafanachart
 
 ## REQUISITO DE PASSWORD COMPLEXITY
 
-Cumplimos este requisito con la función El archivo [script.sh](sensitivedata/script.sh)  es un bash script que ejecuta el comando "helm template dummytest $chart_dir". Esto es debido al requerimiento de que el plugin no debe instalar la aplicación.
+Cumplimos este requisito con la función enforce_passcomplexity del archivo [script.sh](sensitivedata/script.sh)  Dicha función parsea el archivo "values.yaml" del chart y extrae los keys cuyo nombre termine en "pass" o en "credentials" o en "passwords" o en "pwd".
 
-El resultado de dicho comando es parseado por la herramienta yq.  A continuación mostramos el extracto del script que muestra el parseo
+Los values de dichas keys se almacenan en el array llamado my_array. En caso alguno de los keys no exista enntonces el value será "null".  El script ignora los values "null". El resto de values los analiza para ver si cumplen las políticas  de tener por lo menos 8 caracteres, por lo menos 1 mayúscula, por lo menos 1 minúscula, por lo menos 1 dígito, por lo menos algunos caracteres especiales.  En caso no cumple con alguna de esas políticas el script da un mensaje de error y termina el script con el comando "exit 1".
+
+A continuación mostramos el extracto del script con dicha función. 
 
 ```
-    my_array=( $( helm template dummytest $chart_dir | yq e 'select(.kind == "Deployment").spec.replicas,select(.kind == "Deployment").spec.template.spec.containers[0].resources.requests.memory,select(.kind == "Deployment").spec.template.spec.containers[0].resources.requests.cpu,select(.kind == "Deployment").metadata.name' ))
+enforce_passcomplexity() {
+    my_array=( $( yq '.deploy.containers.env' $chart_dir/values.yaml | yq '.*pass,.*credentials,.*passwords,.*pwd' ))
+    echo
+    len=${#my_array[@]}
+ 
+    ## Use bash for loop 
+    for (( i=0; i<$len; i++ ))
+    do 
+      myvar=${my_array[$i]}
+      if [ $myvar != null ] ; then
+         if [ ${#myvar} -lt 8 ]; then
+           echo "Password has below  than 8 characters. Aborting chart installation"
+           exit 1
+         else
+           echo "Policy enforced. Password has 8 or more characters"
+           if [[ ! $myvar =~ [A-Z] ]]; then
+             echo "Password does not contain an uppercase letter. Aborting chart installation"
+             exit 1
+           else
+             echo "Policy enforced. Password contains at least one uppercase letter."
+             if [[ ! $myvar =~ [a-z] ]]; then
+               echo "Password does not contain a lowercase letter. Aborting chart installation"
+               exit 1
+             else
+               echo "Policy enforced. Password contains at least one lowercase letter."
+               if [[ ! $myvar =~ [0-9] ]]; then
+                 echo "Password does not contain a digit. Aborting chart installation"
+                 exit 1
+               else
+                 echo "Policy enforced. Password contains at least one digit."
+                 if [[ ! $myvar =~ ['!@#$%^&*()_+'] ]]; then
+                   echo "Password does not contain one of the following  !@#$%^&*()_+ special characters. Aborting chart installation"
+                   exit 1
+                 else
+                   echo "Policy enforced. Password contains at least one of the following  !@#$%^&*()_+ special characters."
+                 fi
+               fi
+             fi
+           fi
+         fi
+      fi
+    done
+
 ```
 
 
