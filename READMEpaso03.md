@@ -22,15 +22,24 @@ ignoreFlags: false
 command: "$HELM_PLUGIN_DIR/script.sh"
 hooks:
   install: "chmod +x $HELM_PLUGIN_DIR/script.sh"
+```
 
+El plugin necesita que declaremos el valor del directorio del chart. A continuación un ejemplo de su uso
+
+```
+ubuntu@lubuntu:~$ helm sensitivedata -d ./challenge05/grafanachart
 ```
 
 ## REQUISITO DE PASSWORD COMPLEXITY
 
-El archivo [script.sh](cpumem/script.sh)  es un bash script que ejecuta el comando "helm template dummytest $chart_dir". Esto es debido al requerimiento de que el plugin no debe instalar la aplicación.
+Cumplimos este requisito con la función El archivo [script.sh](sensitivedata/script.sh)  es un bash script que ejecuta el comando "helm template dummytest $chart_dir". Esto es debido al requerimiento de que el plugin no debe instalar la aplicación.
 
 El resultado de dicho comando es parseado por la herramienta yq.  A continuación mostramos el extracto del script que muestra el parseo
 
 ```
     my_array=( $( helm template dummytest $chart_dir | yq e 'select(.kind == "Deployment").spec.replicas,select(.kind == "Deployment").spec.template.spec.containers[0].resources.requests.memory,select(.kind == "Deployment").spec.template.spec.containers[0].resources.requests.cpu,select(.kind == "Deployment").metadata.name' ))
 ```
+
+
+## REQUISITO DE CREAR SECRET
+
