@@ -1,0 +1,8 @@
+name: "cpumem"
+version: "0.1.0"
+usage: "helm cpumem -d <chart dir>"
+description: "Calculate cpu and mem used by pods in deployment"
+ignoreFlags: false
+command: "$HELM_PLUGIN_DIR/script.sh"
+hooks:
+  install: "chmod +x $HELM_PLUGIN_DIR/script.sh"
