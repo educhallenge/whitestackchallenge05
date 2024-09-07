@@ -58,7 +58,7 @@ Usage:
    -d, --dir          Specify the directory where the chart is located 
 ```
 
-Si usamos un argumento diferente a lo explicado arriba entonces debe generar el mensaje de error "Unknown parameter passed" y luego debe mostrar la ayuda amigable. Esto lo comprobamos con el output de abajo 
+Ahora vemos el caso cuando nos equivocamos en la sintaxis, lo cual sucede si usamos un argumento diferente a lo explicado arriba entonces debe generar el mensaje de error "Unknown parameter passed" y luego debe mostrar la ayuda amigable. Esto lo comprobamos con el output de abajo 
 
 ```
 ubuntu@lubuntu:~$ helm cpumem mistake
