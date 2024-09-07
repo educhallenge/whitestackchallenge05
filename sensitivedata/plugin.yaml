@@ -1,0 +1,8 @@
+name: "sensitivedata"
+version: "0.1.0"
+usage: "helm sensitivedata -d <chart dir>"
+description: "This plugin is used to check and enforce password complexity. Also to enforce the use of secrets"
+ignoreFlags: false
+command: "$HELM_PLUGIN_DIR/script.sh"
+hooks:
+  install: "chmod +x $HELM_PLUGIN_DIR/script.sh"
