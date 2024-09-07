@@ -115,7 +115,7 @@ TEST SUITE: None
 
 ## VERIFICACION
 
-Se verifica que las 3 réplicas de Grafana se deplegaron en el worker llamado "whitestackchallenge-worker-f97ebc81-kfbgg"
+Se verifica que las 3 réplicas de Grafana se desplegaron en el worker llamado "whitestackchallenge-worker-f97ebc81-kfbgg" lo cual es el resultado esperado
 
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ kubectl get pod -owide
