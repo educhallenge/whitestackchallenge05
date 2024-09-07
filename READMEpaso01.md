@@ -1,7 +1,7 @@
 # CHALLENGE 05  PASO 1: Desplegar el pod en un nodo específico con Post Rendering
 
 ## CONFIGURACIÓN
-Se usará un post-renderer que usará un script con la funcionalidad kustomize para agregar la funcionalidad nodeAffinity al despliegue del chart.  Mostramos los scripts de kustomize. 
+Se usará un helm post-renderer que usará un script con la funcionalidad kustomize para agregar la funcionalidad nodeAffinity al despliegue del chart.  Usando "helm template" o "helm install" se generará un archivo YAML del chart. Esto se pasará al script de kustomize, quién recibirá el archivo YAML, lo guardará en base.yaml y lo parchará con el contenido de patch.yaml (dicho patch tiene la función nodeAffinity). Notar que patch.yaml tiene una variable de entorno llamado $workerhostname.  Es por ello que el script kustomize.sh usa la herramienta envsubst para poder usar la variable de entorno en el script.
 
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ more kustomization.yaml 
@@ -18,17 +18,93 @@ cat > base.yaml
 exec kubectl kustomize| envsubst
 rm base.yaml
 ```
-
-
-
+```
+ubuntu@lubuntu:~/challenge05/grafanachart$ more patch.yaml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - ${workerhostname}
+```
 
 ## EJECUCIÓN
 
 Se configura la variable de entorno para seleccionar cuál es el worker en que se prefiere desplegar los pods. Luego ejecutamos la opción post-renderer de helm. Esta opción llama al script [kustomize.sh](chart_files/kustomize.sh)
 
+Podemos primero usar "helm template" para verificar que el archivo YAML resultante del script esté correcto. Luego podemos usar "helm install" para instalar el chart.
+
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ export workerhostname=whitestackchallenge-worker-f97ebc81-kfbgg
+```
+```
+ubuntu@lubuntu:~/challenge05/grafanachart$ helm template mygrafana . --post-renderer ./kustomize.sh 
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000
+  selector:
+    app: grafana
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+      name: grafana
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - whitestackchallenge-worker-f97ebc81-kfbgg
+            weight: 1
+      containers:
+      - env:
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          value: whitestack
+        image: grafana/grafana:11.2.0
+        name: grafana
+        ports:
+        - containerPort: 3000
+          name: grafana
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 400M
 
+```
+```
 ubuntu@lubuntu:~/challenge05/grafanachart$ helm install mygrafana . --post-renderer ./kustomize.sh 
 NAME: mygrafana
 LAST DEPLOYED: Fri Sep  6 22:59:57 2024
