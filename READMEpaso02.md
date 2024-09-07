@@ -2,9 +2,9 @@
 
 ## CONFIGURACIÓN
 
-Los archivos de este plugin se encuentran disponibles en este git y en este link [cpumem](cpumem). El plugin está compuesto de 2 archivos como se muestra:
+Los archivos de este plugin se encuentran disponibles en este git y en este directorio [cpumem](cpumem). El plugin está compuesto de 2 archivos como se muestra:
 ```
-ubuntu@lubuntu:~/.local/share/helm/plugins/cpumem$ tree
+ubuntu@lubuntu:~/cpumem$ tree
 .
 ├── plugin.yaml
 └── script.sh
@@ -33,7 +33,7 @@ El resultado de dicho comando es parseado por la herramienta yq.  A continuació
     my_array=( $( helm template dummytest $chart_dir | yq e 'select(.kind == "Deployment").spec.replicas,select(.kind == "Deployment").spec.template.spec.containers[0].resources.requests.memory,select(.kind == "Deployment").spec.template.spec.containers[0].resources.requests.cpu,select(.kind == "Deployment").metadata.name' ))
 ```
 
-Dicho parseo sirve para analizar el archivo YAML resultante del comando "helm template" y capturar los valores de replica, memory resource request , cpu resource request.  Dichos valores se pasan a un array llamado my_array.
+Dicho parseo sirve para analizar el archivo YAML que resultó del comando "helm template" y capturar los valores de replica, memory resource request , cpu resource request.  Dichos valores se pasan a un array llamado my_array.
 
 Luego manipulamos el valor de memory resource request y cpu resource request para tener por separado el valor númerico y la unidad de medida. Ahora que tenemos el valor numérico podemos multiplicar por el número de replicas y tener el valor total de memory resource request y cpu resource request a nivel de todo el despliegue lo cual es lo que nos piden que haga este plugin.
 
@@ -61,3 +61,36 @@ A continuación un extracto del script que ejecuta lo que se acaba de explicar
     echo "CPU resource request for all replicated pods=" $((cpu_number * replicas))$cpu_unit
 ```
 
+Instalamos y verificamos que el plugin quedó instalado
+
+```
+ubuntu@lubuntu:~/cpumem$ ls
+plugin.yaml  script.sh
+
+ubuntu@lubuntu:~/cpumem$ helm plugin install .
+Installed plugin: cpumem
+
+ubuntu@lubuntu:~/cpumem$ helm plugin list
+NAME  	VERSION	DESCRIPTION                                     
+cpumem	0.1.0  	Calculate cpu and mem used by pods in deployment
+ubuntu@lubuntu:~/cpumem$ 
+```
+
+## EJECUCIÓN
+
+El plugin se llama cpumem por tanto se ejecuta con el comando "helm cpumem". Es necesario usar el flag -d para especificar el directorio donde se encuentra el chart.
+
+Vemos abajo que efectivamente se extraen los valores de # de réplicas,  mem resource request, cpu resource request y luego se hace la multiplicación para encontrar los valores totales necesarios a nivel de todo el deployment.  También se respetan las unidades de medida de memoria y cpu.
+
+```
+ubuntu@lubuntu:~$ helm cpumem -d challenge05/grafanachart
+Reviewing template of deployment: grafana
+Pod replication number= 3
+
+MEM resource request for single pod= 400M
+CPU resource request for single pod= 500m
+
+MEM resource request for all replicated pods= 1200M
+CPU resource request for all replicated pods= 1500m
+
+```
