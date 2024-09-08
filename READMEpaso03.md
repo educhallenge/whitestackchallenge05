@@ -180,8 +180,8 @@ while [[ "$#" -gt 0 ]]; do
 ```
 Revisemos los archivos del subdirectorio `paso03kustomize`
 
+```
 ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ tree
-.```
 ├── base.yaml
 ├── kustomization.yaml
 ├── kustomize.sh
