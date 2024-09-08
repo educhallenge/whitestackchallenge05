@@ -2,7 +2,7 @@
 
 ## ESTRUCTURA DEL CHART
 
-Para realizar este paso hemos creado en el chart un sudbdirectorio llamado paso03kustomize. Esto es necesario porque vamos a usar kustomize y no queremos interferir con el script de kustomize que fue creado para el paso 1 y que está en el directorio principal y. No ha habido cambios a los archivos del directorio principal. La nueva estructura del chart se ve a continuación:
+Para realizar este paso hemos creado en el chart un sudbdirectorio llamado paso03kustomize. Esto es necesario porque vamos a usar kustomize y no queremos interferir con el script de kustomize que fue creado para el paso 1 y que está en el directorio principal. No ha habido cambios a los archivos del directorio principal. La nueva estructura del chart se ve a continuación:
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ tree
 .
@@ -148,4 +148,30 @@ Policy enforced. Password contains at least one of the following  !@#$%^&*()_+ s
 
 ## REQUISITO DE CREAR SECRET
 
+Revisamos el extracto de abajo script.sh del plugin sensitivedata. Podemos ver quue el script acepta argumentos. En particular nos interesa el argumento -d que permite declarar el directorio donde se encuentra el chart.  Vemos que se llama a la función "enforce_passwordcomplexity" que fue lo que revisamos en la sección anterior.
 
+```
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -h|--help) display_help; shift ;;
+        -d| --dir*)
+        if ! has_argument $@; then
+          echo "Chart directory not specified." >&2
+          display_help
+          exit 1
+        fi
+        chart_dir=$(extract_argument $@)
+        enforce_passcomplexity $chart_dir
+
+        myname=$(yq '.deploy.name' $chart_dir/values.yaml)
+        cd $chart_dir/paso03kustomize
+        helm install $myname .. --post-renderer ./kustomize.sh
+
+        shift ;;
+        *) echo "Unknown parameter passed: $1"; display_help ;;
+    esac
+    shift
+```
+
+
+Para crear el secret se usará kustomize con los archivos del subdirectorio paso03kustomize. 
