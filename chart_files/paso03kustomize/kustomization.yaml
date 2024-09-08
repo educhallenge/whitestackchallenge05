@@ -1,0 +1,7 @@
+resources:
+- pivot.yaml
+
+patches:
+- path: patch-secret.yaml
+- path: patch-deployment.yaml
+

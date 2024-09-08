@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  template:
+    spec:
+      containers:
+        - name: grafana
+          env:
+          - name: GF_SECURITY_ADMIN_PASSWORD
+            value: null
+            valueFrom:
+              secretKeyRef:
+                name: mysecret
+                key: GF_SECURITY_ADMIN_PASSWORD
