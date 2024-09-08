@@ -36,7 +36,7 @@ ubuntu@lubuntu:~/sensitivedata$ tree
 
 El archivo [plugin.yaml](sensitivedata/plugin.yaml) es obligatorio. Notar que este archivo llama a ejecutar el archivo "script.sh".  También es importante resaltar que hay un "hook" que otorga permisos de ejecución al archivo "script.sh" debido a que es algo muy común el problema de no poder ejecutar un script debido a falta de permisos.
 ```
-ame: "sensitivedata"
+name: "sensitivedata"
 version: "0.1.0"
 usage: "helm sensitivedata -d <chart dir>"
 description: "This plugin is used to check and enforce password complexity. Also to enforce the use of secrets"
@@ -199,7 +199,7 @@ metadata:
   name: mysecret
 ```
 
-Ahora revisemos el archivo "kustomize.sh". Vemos que copia el archivo "base.yaml" a "pivot.yaml".  Luego la línea `cat >> pivot.yaml` lo que hace es recibir el resultado del comando "helm install $myname .." del archivo "script.sh" (el que hemos revisado líneas arriba. El efecto es que "pivot.yaml" recibirá los recursos "deployment", "service" del chart y del recurso "secret" de "base.yaml". Es decir "pivot.yaml" acumula todos los recursos. Luego la línea `exec kubectl kustomize| envsubst ` ejecuta kustomize , lo cual por defecto usa el archivo "kustomization.yaml" que veremos abajo. Vemos también que dicha línea usa la herramienta "envsubst" Esto es para reemplazar la environment variable que usaremos más abajo.
+Ahora revisemos el archivo "kustomize.sh". Vemos que copia el archivo "base.yaml" a "pivot.yaml".  Luego la línea `cat >> pivot.yaml` lo que hace es recibir el resultado del comando `helm install $myname .. --post-renderer ./kustomize.sh` del archivo "script.sh" (el que hemos revisado líneas arriba). El efecto es que "pivot.yaml" recibirá los recursos "deployment", "service" del chart y del recurso "secret" de "base.yaml". Es decir "pivot.yaml" acumula todos los recursos. Luego la línea `exec kubectl kustomize| envsubst ` ejecuta kustomize , lo cual por defecto usa el archivo "kustomization.yaml" que veremos más abajo. Vemos también que dicha línea usa la herramienta "envsubst" Esto es para reemplazar la environment variable que usaremos más abajo.
 
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more kustomize.sh 
@@ -209,4 +209,15 @@ cat >> pivot.yaml
 # you can also use "kustomize build ." if you have it installed.
 exec kubectl kustomize| envsubst 
 rm pivot.yaml
+```
+
+Ahora revisemos el archivo "kustomization.yaml"
+```
+ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more kustomization.yaml 
+resources:
+- pivot.yaml
+
+patches:
+- path: patch-secret.yaml
+- path: patch-deployment.yaml
 ```
