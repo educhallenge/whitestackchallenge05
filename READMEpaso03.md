@@ -222,7 +222,7 @@ patches:
 - path: patch-deployment.yaml
 ```
 
-Veamos el archivo "path-secret.yaml"
+Veamos el archivo "path-secret.yaml". Este parche agregará el recurso "secret" con un key "GF_SECURITY_ADMIN_PASSWORD" y con un value ${mypass_base64} el cual tomará su valor de una variable de entorno.
 
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more patch-secret.yaml 
@@ -236,7 +236,7 @@ data:
 ```
 
 
-Veamos el archivo "path-deployment.yaml"
+Veamos el archivo "path-deployment.yaml". Este parche hará un merge con el recurso "deployment". Notar la línea `value: null`  . Lo que hace dicha línea es remover dicho campo. Ahora notar las líneas `valueFrom:` , `secretKeyRef:` que harán que el password sea obtenido del key "GF_SECURITY_ADMIN_PASSWORD" que se encuentra en el secret llamado "mysecret".
 
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more patch-deployment.yaml 
