@@ -261,10 +261,10 @@ spec:
 
 ## VERIFICACIÓN DE CREAR Y USAR SECRET
 
-Antes de ejecutar el plugin recordemos que debemos definir la variabla de entorno  ${mypass_base64} para darle un valor al key del recurso "mysecret". Asignamos dicho valor usando el comando "export" como lo vemos abajo. Notar que el password que usamos en este ejemplo es "whitestack". Notar que es necesario convetirlo a base64 debido a que dicho formato es el que se usa en el secret
+Antes de ejecutar el plugin recordemos que debemos definir la variabla de entorno  ${mypass_base64} para darle un valor al key del recurso "mysecret". Asignamos dicho valor usando el comando "export" como lo vemos abajo. Notar que el password que usamos en este ejemplo es "whitestack". Notar que es necesario convertirlo a base64 debido a que dicho formato es el que se usa en el secret
 
 ```
-export mypass_base64=`echo -n whitestack1| base64 `
+export mypass_base64=`echo -n whitestack1| base64`
 ```
 
 Ahora podemos ejecutar el plugin
@@ -284,3 +284,39 @@ REVISION: 1
 TEST SUITE: None
 ```
 
+Revisemos el recurso mysecret
+```
+ubuntu@lubuntu:~$ kubectl describe secret/mysecret
+Warning: Use tokens from the TokenRequest API or manually created secret-based tokens instead of auto-generated secret-based tokens.
+Name:         mysecret
+Namespace:    challenger-004
+Labels:       app.kubernetes.io/managed-by=Helm
+Annotations:  meta.helm.sh/release-name: grafana
+              meta.helm.sh/release-namespace: challenger-004
+
+Type:  Opaque
+
+Data
+====
+GF_SECURITY_ADMIN_PASSWORD:  11 bytes
+```
+
+Ahora revisemos que todos los pods usan el key "GF_SECURITY_ADMIN_PASSWORD" de "mysecret"
+
+```
+ubuntu@lubuntu:~$ kubectl get pod
+NAME                       READY   STATUS    RESTARTS   AGE
+grafana-5f8f5b77d5-g9pb7   1/1     Running   0          2m15s
+grafana-5f8f5b77d5-nzh42   1/1     Running   0          2m15s
+grafana-5f8f5b77d5-sxmhx   1/1     Running   0          2m15s
+
+ubuntu@lubuntu:~$ kubectl describe pod | grep -A 1 Env
+    Environment:
+      GF_SECURITY_ADMIN_PASSWORD:  <set to the key 'GF_SECURITY_ADMIN_PASSWORD' in secret 'mysecret'>  Optional: false
+--
+    Environment:
+      GF_SECURITY_ADMIN_PASSWORD:  <set to the key 'GF_SECURITY_ADMIN_PASSWORD' in secret 'mysecret'>  Optional: false
+--
+    Environment:
+      GF_SECURITY_ADMIN_PASSWORD:  <set to the key 'GF_SECURITY_ADMIN_PASSWORD' in secret 'mysecret'>  Optional: false
+```
