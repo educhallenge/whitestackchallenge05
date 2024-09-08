@@ -2,7 +2,7 @@
 
 ## ESTRUCTURA DEL CHART
 
-Para realizar este paso hemos creado en el chart un sudbdirectorio llamado paso03kustomize. Esto es necesario porque vamos a usar kustomize y no queremos interferir con el script de kustomize que fue creado para el paso 1 y que está en el directorio principal. No ha habido cambios a los archivos del directorio principal. La nueva estructura del chart se ve a continuación:
+Para realizar este paso hemos creado en el chart un sudbdirectorio llamado `paso03kustomize`. Esto es necesario porque vamos a usar kustomize y no queremos interferir con el script de kustomize que fue creado para el paso 1 y que está en el directorio principal. No ha habido cambios a los archivos del directorio principal. La nueva estructura del chart se ve a continuación:
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ tree
 .
@@ -56,7 +56,7 @@ ubuntu@lubuntu:~$ helm sensitivedata -d ./challenge05/grafanachart
 
 Cumplimos este requisito con la función enforce_passcomplexity del archivo [script.sh](sensitivedata/script.sh)  Dicha función usa el comando "yq" para parsear el archivo "values.yaml" del chart y extraer los keys cuyo nombre termine en "pass" o en "credentials" o en "passwords" o en "pwd".
 
-Los values de dichas keys se almacenan en el array llamado my_array. En caso alguno de los keys no exista enntonces el value será "null".  El script ignora los values "null". El resto de values se analizan para ver si cumplen las políticas  de tener por lo menos 8 caracteres, por lo menos 1 mayúscula, por lo menos 1 minúscula, por lo menos 1 dígito, por lo menos algunos caracteres especiales. Para verificar cada política usa un "if" y se compara el value con un regex. En caso no cumple con alguna de esas políticas el script da un mensaje de error y termina el script con el comando "exit 1".
+Los values de dichas keys se almacenan en el array llamado my_array. Si es que alguno de los keys no existe entonces el value será "null".  El script ignora los values "null". El resto de values se analizan para ver si cumplen las políticas  de tener por lo menos 8 caracteres, por lo menos 1 mayúscula, por lo menos 1 minúscula, por lo menos 1 dígito, por lo menos algunos caracteres especiales. Usamos un "if" para cada verificación de política. En cada "if" se compara el value con un regex. En caso no cumple con alguna de esas políticas el script da un mensaje de error y termina el script con el comando "exit 1".
 
 A continuación mostramos el extracto del script con dicha función. 
 
@@ -175,6 +175,25 @@ while [[ "$#" -gt 0 ]]; do
     esac
     shift
 ```
+Revisemos los archivos del subdirectorio `paso03kustomize`
+
+ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ tree
+.```
+├── base.yaml
+├── kustomization.yaml
+├── kustomize.sh
+├── patch-deployment.yaml
+└── patch-secret.yaml
+```
+
+Recordemos que nuestro chart sólo tiene un recurso "deployment" y un recurso "service". El archivo "base.yaml" contiene la base de un recurso "secret". Esto es importante porque luego vamos  a usar "kustomize" para hacer un "patch" con el archivo "path-secret.yaml". El "patch" no funcionará a menos que le haga match a un recurso ya existente y eso es lo que nos ofrecerá el archivo "base.yaml".
+
+```
+ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more base.yaml 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+```
 
 
-Para crear el secret se usará kustomize con los archivos del subdirectorio paso03kustomize. 
