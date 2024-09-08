@@ -149,7 +149,7 @@ Policy enforced. Password contains at least one digit.
 Policy enforced. Password contains at least one of the following  !@#$%^&*()_+ special characters.
 ```
 
-## REQUISITO DE CREAR SECRET
+## REQUISITO DE CREAR Y USAR SECRET
 
 Revisamos el extracto de abajo script.sh del plugin sensitivedata. Podemos ver quue el script acepta argumentos. En particular nos interesa el argumento -d que permite declarar el directorio donde se encuentra el chart.  Vemos la línea `enforce_passwordcomplexity $chart_dir` que es la que llama a la función  que revisamos en la sección anterior.
 Luego está la línea `myname=$(yq '.deploy.name' $chart_dir/values.yaml)` para capturar el nombre del deployment.
@@ -199,7 +199,7 @@ metadata:
   name: mysecret
 ```
 
-Ahora revisemos el archivo "kustomize.sh". Vemos que copia el archivo "base.yaml" a "pivot.yaml".  Luego la línea `cat >> pivot.yaml` lo que hace es recibir el resultado del comando `helm install $myname .. --post-renderer ./kustomize.sh` del archivo "script.sh" (el que hemos revisado líneas arriba). El efecto es que "pivot.yaml" recibirá los recursos "deployment", "service" del chart y del recurso "secret" de "base.yaml". Es decir "pivot.yaml" acumula todos los recursos. Luego la línea `exec kubectl kustomize| envsubst ` ejecuta kustomize , lo cual por defecto usa el archivo "kustomization.yaml" que veremos más abajo. Vemos también que dicha línea usa la herramienta "envsubst" Esto es para reemplazar la environment variable que usaremos más abajo.
+Ahora revisemos el archivo "kustomize.sh". Vemos que copia el archivo "base.yaml" a "pivot.yaml".  Luego la línea `cat >> pivot.yaml` lo que hace es recibir el resultado del comando `helm install $myname .. --post-renderer ./kustomize.sh` del archivo "script.sh" (el que hemos revisado líneas arriba). El efecto es que "pivot.yaml" recibirá los recursos "deployment", "service" del chart y del recurso "secret" de "base.yaml". Es decir "pivot.yaml" acumula todos los recursos. Luego la línea `exec kubectl kustomize| envsubst ` ejecuta kustomize , lo cual por defecto usa el archivo "kustomization.yaml" que veremos más abajo. Vemos también que dicha línea usa la herramienta "envsubst" Esto es para reemplazar la environment variable ${mypass_base64} que se mostrará más abajo en el archivo "patch-secret.yaml".
 
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more kustomize.sh 
@@ -236,7 +236,7 @@ data:
 ```
 
 
-Veamos el archivo "path-deployment.yaml". Este parche hará un merge con el recurso "deployment". Notar la línea `value: null`  . Lo que hace dicha línea es remover dicho campo. Ahora notar las líneas `valueFrom:` , `secretKeyRef:` que harán que el password sea obtenido del key "GF_SECURITY_ADMIN_PASSWORD" que se encuentra en el secret llamado "mysecret".
+Veamos el archivo "path-deployment.yaml". Este parche hará un merge con el recurso "deployment". Notar la línea `value: null`  . Lo que hace dicha línea es remover dicho campo. Ahora notar las líneas `valueFrom:` , `secretKeyRef:` que harán que el password sea obtenido del key "GF_SECURITY_ADMIN_PASSWORD" que se encuentra en el secret llamado "mysecret" con lo cual se cumple los requerimientos que nos pidieron en esta sección.
 
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more patch-deployment.yaml 
@@ -258,3 +258,29 @@ spec:
                 key: GF_SECURITY_ADMIN_PASSWORD
 
 ```
+
+## VERIFICACIÓN DE CREAR Y USAR SECRET
+
+Antes de ejecutar el plugin recordemos que debemos definir la variabla de entorno  ${mypass_base64} para darle un valor al key del recurso "mysecret". Asignamos dicho valor usando el comando "export" como lo vemos abajo. Notar que el password que usamos en este ejemplo es "whitestack". Notar que es necesario convetirlo a base64 debido a que dicho formato es el que se usa en el secret
+
+```
+export mypass_base64=`echo -n whitestack1| base64 `
+```
+
+Ahora podemos ejecutar el plugin
+```
+ubuntu@lubuntu:~$ helm sensitivedata -d challenge05/grafanachart
+
+Policy enforced. Password has 8 or more characters
+Policy enforced. Password contains at least one uppercase letter.
+Policy enforced. Password contains at least one lowercase letter.
+Policy enforced. Password contains at least one digit.
+Policy enforced. Password contains at least one of the following  !@#$%^&*()_+ special characters.
+NAME: grafana
+LAST DEPLOYED: Fri Sep  6 15:40:52 2024
+NAMESPACE: challenger-004
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+```
+
