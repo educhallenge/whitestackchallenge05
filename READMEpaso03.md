@@ -148,7 +148,10 @@ Policy enforced. Password contains at least one of the following  !@#$%^&*()_+ s
 
 ## REQUISITO DE CREAR SECRET
 
-Revisamos el extracto de abajo script.sh del plugin sensitivedata. Podemos ver quue el script acepta argumentos. En particular nos interesa el argumento -d que permite declarar el directorio donde se encuentra el chart.  Vemos que se llama a la función "enforce_passwordcomplexity" que fue lo que revisamos en la sección anterior.
+Revisamos el extracto de abajo script.sh del plugin sensitivedata. Podemos ver quue el script acepta argumentos. En particular nos interesa el argumento -d que permite declarar el directorio donde se encuentra el chart.  Vemos la línea `enforce_passwordcomplexity $chart_dir` que es la que llama a la función  que revisamos en la sección anterior.
+Luego está la línea `myname=$(yq '.deploy.name' $chart_dir/values.yaml)` para capturar el nombre del deployment.
+La línea `cd $chart_dir/paso03kustomize` cambia el working directory al directorio donde están los archivos usados por kustomize.
+Y la línea `helm install $myname .. --post-renderer ./kustomize.sh` es la que llamará al script "kustomize.sh" y luego instalará el chart. Más abajo explicaremos la lógica que usamos en kustomize.
 
 ```
 while [[ "$#" -gt 0 ]]; do
