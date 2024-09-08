@@ -284,25 +284,34 @@ REVISION: 1
 TEST SUITE: None
 ```
 
-Revisemos el recurso mysecret
+Revisemos el recurso mysecret. Vemos que el key "GF_SECURITY_ADMIN_PASSWORD" tiene el valor "d2hpdGVzdGFjazE="
 ```
-ubuntu@lubuntu:~$ kubectl describe secret/mysecret
+ubuntu@lubuntu:~$ kubectl get secret/mysecret -oyaml
 Warning: Use tokens from the TokenRequest API or manually created secret-based tokens instead of auto-generated secret-based tokens.
-Name:         mysecret
-Namespace:    challenger-004
-Labels:       app.kubernetes.io/managed-by=Helm
-Annotations:  meta.helm.sh/release-name: grafana
-              meta.helm.sh/release-namespace: challenger-004
-
-Type:  Opaque
-
-Data
-====
-GF_SECURITY_ADMIN_PASSWORD:  11 bytes
+apiVersion: v1
+data:
+  GF_SECURITY_ADMIN_PASSWORD: d2hpdGVzdGFjazE=
+kind: Secret
+metadata:
+  annotations:
+    meta.helm.sh/release-name: grafana
+    meta.helm.sh/release-namespace: challenger-004
+  creationTimestamp: "2024-09-08T20:46:24Z"
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: mysecret
+  namespace: challenger-004
+  resourceVersion: "107790938"
+  uid: 50ca853f-aa53-4106-8a7b-18edd9874824
+type: Opaque
 ```
+Recordemos que el valor "d2hpdGVzdGFjazE=" está en formato base64. Lo decodificamos y comprobamos que el password original es "whitestack1"
 
-Ahora revisemos que todos los pods usan el key "GF_SECURITY_ADMIN_PASSWORD" de "mysecret"
-
+```
+ubuntu@lubuntu:~$ echo -n "d2hpdGVzdGFjazE=" | base64 --decode
+whitestack1
+```
+Revisemos que todos los pods usan el key "GF_SECURITY_ADMIN_PASSWORD" de "mysecret"
 ```
 ubuntu@lubuntu:~$ kubectl get pod
 NAME                       READY   STATUS    RESTARTS   AGE
@@ -320,3 +329,17 @@ ubuntu@lubuntu:~$ kubectl describe pod | grep -A 1 Env
     Environment:
       GF_SECURITY_ADMIN_PASSWORD:  <set to the key 'GF_SECURITY_ADMIN_PASSWORD' in secret 'mysecret'>  Optional: false
 ```
+
+Ahora hacemos port-forward para probar el acceso http al servicio de Grafana
+```
+ubuntu@lubuntu:~$ kubectl port-forward svc/grafana 3000 --address="0.0.0.0"
+Warning: Use tokens from the TokenRequest API or manually created secret-based tokens instead of auto-generated secret-based tokens.
+Forwarding from 0.0.0.0:3000 -> 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+```
+
+Ingresamos por http a la IP de nuestra PC local con puerto 3000 y comprobamos que efectivamente el password whitestack1 se usa exitosamente para ingresar a Grafana
+
+
