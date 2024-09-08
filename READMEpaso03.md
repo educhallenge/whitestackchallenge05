@@ -122,6 +122,9 @@ Error: plugin "sensitivedata" exited with error
 
 Ahora probamos cuando el key "adminpass" tiene el valor Whitestack1 y verificamos que no se cumple la política de caracteres especiales
 ```
+ubuntu@lubuntu:~$ more challenge05/grafanachart/values.yaml | grep adminpass:
+          adminpass: Whitestack1
+
 ubuntu@lubuntu:~$ helm sensitivedata -d ./challenge05/grafanachart
 
 Policy enforced. Password has 8 or more characters
@@ -196,4 +199,13 @@ metadata:
   name: mysecret
 ```
 
-
+Ahora revisemos el archivo "kustomize.sh". Vemos que copia el archivo 
+```
+ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more kustomize.sh 
+#!/bin/sh
+cp base.yaml pivot.yaml
+cat >> pivot.yaml
+# you can also use "kustomize build ." if you have it installed.
+exec kubectl kustomize| envsubst 
+rm pivot.yaml
+```
