@@ -5,7 +5,7 @@ Se usará un helm post-renderer que usará un bash script con el comando "kubect
 
 Debido a que no tenemos permisos de ver los labels de los workers hemos configurado nodeAffinity con el label "kubernetes.io/hostname" el cual es un label por defecto. 
 
-Notar que patch.yaml tiene una variable de entorno llamado $workerhostname el cual se usa para asignar un valor al label "kubernetes.io/hostname"
+Notar que patch.yaml tiene una variable de entorno llamado `$workerhostname` el cual se usa para asignar un valor al label "kubernetes.io/hostname"
 
 Es por ello que el script `kustomize.sh` usa la herramienta `envsubst` para poder usar la variable de entorno en el script.
 
