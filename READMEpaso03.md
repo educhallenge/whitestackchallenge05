@@ -105,7 +105,7 @@ enforce_passcomplexity() {
     done
 ```
 
-## VERIFICACÓN DE PASSWORD COMPLEXITY
+## VERIFICACIÓN DE PASSWORD COMPLEXITY
 
 Usamos el key "adminpass" en el archivo values.yaml cuyo valor es whitestack y verificamos que no se cumple la política de tener al menos una mayúscula.
 
@@ -199,7 +199,8 @@ metadata:
   name: mysecret
 ```
 
-Ahora revisemos el archivo "kustomize.sh". Vemos que copia el archivo 
+Ahora revisemos el archivo "kustomize.sh". Vemos que copia el archivo "base.yaml" a "pivot.yaml".  Luego la línea `cat >> pivot.yaml` lo que hace es recibir el resultado del comando "helm install $myname .." del archivo "script.sh" (el que hemos revisado líneas arriba. El efecto es que "pivot.yaml" recibirá los recursos "deployment", "service" del chart y del recurso "secret" de "base.yaml". Es decir "pivot.yaml" acumula todos los recursos. Luego la línea `exec kubectl kustomize| envsubst ` ejecuta kustomize , lo cual por defecto usa el archivo "kustomization.yaml" que veremos abajo. Vemos también que dicha línea usa la herramienta "envsubst" Esto es para reemplazar la environment variable que usaremos más abajo.
+
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more kustomize.sh 
 #!/bin/sh
