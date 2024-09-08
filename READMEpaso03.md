@@ -1,5 +1,28 @@
 # CHALLENGE 05  PASO 3: Crear Helm Plugin para validación y configuración de información sensible
 
+## ESTRUCTURA DEL CHART
+
+Para realizar este paso hemos creado un sudbdirectorio llamado paso03kustomize. Esto es necesario porque vamos a usar kustomize y no queremos interferir con el script de kustomize que fue creado para el paso 1 y que está en el directorio principal. No ha habido cambios a los archivos del directorio principal. La nueva estructura del chart quedaría así
+
+```
+ubuntu@lubuntu:~/challenge05/grafanachart$ tree
+.
+├── Chart.yaml
+├── kustomization.yaml
+├── kustomize.sh
+├── paso03kustomize
+│   ├── base.yaml
+│   ├── kustomization.yaml
+│   ├── kustomize.sh
+│   ├── patch-deployment.yaml
+│   └── patch-secret.yaml
+├── patch.yaml
+├── templates
+│   ├── grafanadeploy.yaml
+│   └── grafanasvc.yaml
+└── values.yaml
+```
+
 ## ESTRUCTURA DEL PLUGIN
 
 Los archivos de este plugin se encuentran disponibles en este git y en este directorio [sensitivedata](sensitivedata). El plugin está compuesto de 2 archivos como se muestra:
