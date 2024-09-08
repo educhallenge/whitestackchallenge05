@@ -340,10 +340,10 @@ Handling connection for 3000
 Handling connection for 3000
 ```
 
-Ingresamos por http a la IP de nuestra PC local con puerto 3000. Nos aparece la página de login. Ingresamos el usuario admin con password whitestack1
+Ingresamos por http a la IP de nuestra PC local con puerto 3000. Aparece la página de login. Ingresamos el usuario admin con password whitestack1
 <img src="./grafana-adminpassword.JPG">
 
-En la siguiente figura comprobamos que se hizo login exitoso en Grafana con el password whitestack1 
+En la siguiente figura comprobamos que se aceptó el login y se ha ingresado exitosamente a Grafana con el password whitestack1 
 <img src="./grafana-loginsuccesful.JPG">
 
 
