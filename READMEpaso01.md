@@ -7,7 +7,7 @@ Debido a que no tenemos permisos de ver los labels de los workers hemos configur
 
 Notar que patch.yaml tiene una variable de entorno llamado $workerhostname el cual se usa para asignar un valor al label "kubernetes.io/hostname"
 
-Es por ello que el script kustomize.sh usa la herramienta envsubst para poder usar la variable de entorno en el script.
+Es por ello que el script `kustomize.sh` usa la herramienta `envsubst` para poder usar la variable de entorno en el script.
 
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ more kustomization.yaml 
@@ -47,11 +47,16 @@ spec:
 
 ## EJECUCIÓN
 
+Modificar los permisos de "kustomize.sh" para que sea ejecutable
+```
+ubuntu@lubuntu:~/challenge05/grafanachart$ chmod +x kustomize.sh
+```
+
 Se configura la variable de entorno para seleccionar cuál es el worker en que se prefiere desplegar los pods. Luego ejecutamos la opción post-renderer de helm. Esta opción llama al script [kustomize.sh](chart_files/kustomize.sh)
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ export workerhostname=whitestackchallenge-worker-f97ebc81-kfbgg
 ```
-Podemos primero usar "helm template" para verificar que el archivo YAML resultante del script esté correcto. Luego podemos usar "helm install" para instalar el chart.
+Podemos primero usar "helm template" para verificar que el archivo YAML resultante del script esté correcto. 
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ helm template mygrafana . --post-renderer ./kustomize.sh 
 apiVersion: v1
@@ -108,6 +113,8 @@ spec:
             memory: 400M
 
 ```
+
+Luego podemos usar "helm install" para instalar el chart.
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ helm install mygrafana . --post-renderer ./kustomize.sh 
 NAME: mygrafana
