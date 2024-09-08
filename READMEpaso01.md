@@ -136,5 +136,11 @@ NAME                       READY   STATUS    RESTARTS   AGE   IP              NO
 grafana-7bc9f6c598-5tdg2   1/1     Running   0          6s    10.42.228.179   whitestackchallenge-worker-f97ebc81-kfbgg   <none>           <none>
 grafana-7bc9f6c598-chfqj   1/1     Running   0          6s    10.42.228.136   whitestackchallenge-worker-f97ebc81-kfbgg   <none>           <none>
 grafana-7bc9f6c598-dzxrh   1/1     Running   0          6s    10.42.228.130   whitestackchallenge-worker-f97ebc81-kfbgg   <none>           <none>
+```
 
+Ahora podemos desinstalar el chart para hacer las pruebas de los siguientes pasos
+
+```
+ubuntu@lubuntu:~/challenge05/grafanachart$  helm uninstall mygrafana
+release "mygrafana" uninstalled
 ```
