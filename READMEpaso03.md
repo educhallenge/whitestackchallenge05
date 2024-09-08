@@ -2,8 +2,7 @@
 
 ## ESTRUCTURA DEL CHART
 
-Para realizar este paso hemos creado un sudbdirectorio llamado paso03kustomize. Esto es necesario porque vamos a usar kustomize y no queremos interferir con el script de kustomize que fue creado para el paso 1 y que está en el directorio principal. No ha habido cambios a los archivos del directorio principal. La nueva estructura del chart quedaría así
-
+Para realizar este paso hemos creado en el chart un sudbdirectorio llamado paso03kustomize. Esto es necesario porque vamos a usar kustomize y no queremos interferir con el script de kustomize que está en el directorio principal y fue creado para el paso 1. No ha habido cambios a los archivos del directorio principal. La nueva estructura del chart se ve a continuación:
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart$ tree
 .
@@ -23,7 +22,7 @@ ubuntu@lubuntu:~/challenge05/grafanachart$ tree
 └── values.yaml
 ```
 
-## ESTRUCTURA DEL PLUGIN
+## ESTRUCTURA DEL PLUGIN "SENSITIVE DATA"
 
 Los archivos de este plugin se encuentran disponibles en este git y en este directorio [sensitivedata](sensitivedata). El plugin está compuesto de 2 archivos como se muestra:
 ```
