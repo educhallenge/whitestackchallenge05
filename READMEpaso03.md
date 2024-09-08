@@ -211,7 +211,7 @@ exec kubectl kustomize| envsubst
 rm pivot.yaml
 ```
 
-Ahora revisemos el archivo "kustomization.yaml"
+Ahora revisemos el archivo "kustomization.yaml". Vemos que toma como base al archivo "pivot.yaml" y luego ejecutará "patches" (es decir se hará merge) con los archivos "path-secret.yaml" y "path-deployment.yaml"
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more kustomization.yaml 
 resources:
@@ -220,4 +220,41 @@ resources:
 patches:
 - path: patch-secret.yaml
 - path: patch-deployment.yaml
+```
+
+Veamos el archivo "path-secret.yaml"
+
+```
+ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more patch-secret.yaml 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+type: Opaque
+data:
+  GF_SECURITY_ADMIN_PASSWORD: ${mypass_base64}
+```
+
+
+Veamos el archivo "path-deployment.yaml"
+
+```
+ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ more patch-deployment.yaml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  template:
+    spec:
+      containers:
+        - name: grafana
+          env:
+          - name: GF_SECURITY_ADMIN_PASSWORD
+            value: null
+            valueFrom:
+              secretKeyRef:
+                name: mysecret
+                key: GF_SECURITY_ADMIN_PASSWORD
+
 ```
