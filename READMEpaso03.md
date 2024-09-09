@@ -46,6 +46,21 @@ hooks:
   install: "chmod +x $HELM_PLUGIN_DIR/script.sh"
 ```
 
+Instalamos y verificamos que el plugin quedó instalado
+
+```
+ubuntu@lubuntu:~/sensitivedata$ ls
+plugin.yaml  script.sh
+
+ubuntu@lubuntu:~/sensitivedata$ helm plugin install .
+Installed plugin: sensitivedata
+
+ubuntu@lubuntu:~/sensitivedata$ helm plugin list
+NAME         	VERSION	DESCRIPTION                                                                                     
+cpumem       	0.1.0  	Calculate cpu and mem used by pods in deployment                                                
+sensitivedata	0.1.0  	This plugin is used to check and enforce password complexity. Also to enforce the use of secrets
+```
+
 El plugin necesita que declaremos el valor del directorio del chart. A continuación un ejemplo de su uso
 
 ```
