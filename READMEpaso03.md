@@ -282,7 +282,7 @@ Antes de ejecutar el plugin recordemos que debemos definir la variabla de entorn
 export mypass_base64=`echo -n whitestack1| base64`
 ```
 
-También debemos modificar los permisos de "kustomize.sh" para que sea ejecutable
+También debemos ir al subdirectorio "pso03kustomize" y modificar los permisos de `kustomize.sh` para que sea ejecutable
 ```
 ubuntu@lubuntu:~/challenge05/grafanachart/paso03kustomize$ chmod +x kustomize.sh 
 ```
